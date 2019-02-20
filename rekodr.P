@@ -1,0 +1,230 @@
+%:- auto_table.
+:- dynamic da/1, ne/1.
+
+% PriAna Expert System - knowledge by Miroslav Bača; coding by Markus Schatten
+
+/*
+    PriAna Expert System - knowledge by Miroslav Bača; coding by Markus Schatten
+    Copyright (C) 2018  Markus Schatten, Miroslav Bača
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+kreni :-
+	current_prolog_flag( argv, [ _, 'Also', 'sprach', 'Zaratustra' | [] ] ),
+	korjen( Cvor ),
+	pitaj( Izlaz, Cvor ),
+	writeln( Izlaz ),
+	halt.
+
+kreni :-
+	halt.
+	
+
+% Prvo pitanje
+korjen( cvor( definicija_osobnog_podatka ) ).
+
+% cvor, da, ne
+cvor( definicija_osobnog_podatka, cvor( definicija_obrade ), i1_dpo_pojasni ).
+cvor( definicija_obrade, cvor( zakonita_obrada ), i1_dpo_pojasni ).
+cvor( zakonita_obrada, cvor( provedeni_modaliteti ), i2_dpo_zakonita_obrada ).
+cvor( provedeni_modaliteti, cvor( dpo_provedeni_modaliteti ), i3_provedeni_modaliteti ).
+cvor( dpo_provedeni_modaliteti, cvor( osjetljivi_podaci ), i4_dpo_provedeni_modaliteti ).
+cvor( osjetljivi_podaci, cvor( propisano_uredbom ), cvor( kucne_aktivnosti ) ).
+cvor( propisano_uredbom, cvor( dpo_propisano_uredbom ), i5_propisano_uredbom ).
+cvor( dpo_propisano_uredbom, cvor( izricita_suglasnost ), i6_dpo_propisano_uredbom ).
+cvor( izricita_suglasnost, cvor( kucne_aktivnosti ), i5_propisano_uredbom ).
+cvor( kucne_aktivnosti, i7_kucne_aktivnosti, cvor( davatelj_usluga ) ).
+cvor( davatelj_usluga, cvor( dpo_davatelj_usluga ), cvor( poslovna_primjena ) ).
+cvor( dpo_davatelj_usluga, cvor( poslovna_primjena ), i8_dpo_davatelj_usluga ).
+cvor( poslovna_primjena, cvor( dpo_poslovna_primjena ), cvor( podaci_o_maloljetnicima ) ).
+cvor( dpo_poslovna_primjena, cvor( podaci_o_maloljetnicima ), i9_dpo_poslovna_primjena ).
+cvor( podaci_o_maloljetnicima, cvor( obrada_sukladno_uredbi ), cvor( genetske_osobine ) ).
+cvor( obrada_sukladno_uredbi, cvor( dpo_obrada_sukladno_uredbi ), i10 ).
+cvor( dpo_obrada_sukladno_uredbi, cvor( podaci_zasticeni ), i11 ).
+cvor( podaci_zasticeni, cvor( dpo_podaci_zasticeni ), i12 ).
+cvor( dpo_podaci_zasticeni, cvor( genetske_osobine ), i13 ).
+cvor( genetske_osobine, cvor( ima_ovlastenje_genetske_osobine ), cvor( biometrijski_podaci ) ).
+cvor( ima_ovlastenje_genetske_osobine, cvor( dpo_uvjeti_za_rad_genetske_osobine ), i14 ).
+cvor( dpo_uvjeti_za_rad_genetske_osobine, cvor( dpo_genetske_osobine ), i14 ).
+cvor( dpo_genetske_osobine, cvor( biometrijski_podaci ), i15 ).
+cvor( biometrijski_podaci, cvor( ima_ovlastenje_biometrijski_podaci ), cvor( podaci_o_videonadzoru ) ).
+cvor( ima_ovlastenje_biometrijski_podaci, cvor( dpo_uvjeti_za_rad_biometrijski_podaci ), i16 ).
+cvor( dpo_uvjeti_za_rad_biometrijski_podaci, cvor( dpo_biometrijski_podaci ), i16 ).
+cvor( dpo_biometrijski_podaci, cvor( podaci_o_videonadzoru ), i17 ).
+cvor( podaci_o_videonadzoru, cvor( ima_ovlastenje_podaci_o_videonadzoru ), cvor( mjere_zastite ) ).
+cvor( ima_ovlastenje_podaci_o_videonadzoru, cvor( dpo_uvjeti_za_rad_podaci_o_videonadzoru ), i18 ).
+cvor( dpo_uvjeti_za_rad_podaci_o_videonadzoru, cvor( dpo_podaci_o_videonadzoru ), i18 ).
+cvor( dpo_podaci_o_videonadzoru, cvor( mjere_zastite ), i19 ).
+cvor( mjere_zastite, cvor( dpo_mjere_zastite ), i20 ).
+cvor( dpo_mjere_zastite, cvor( preminule_osobe ), i21 ).
+cvor( preminule_osobe, i22, cvor( propisana_prava ) ).
+cvor( propisana_prava, cvor( odgovarajuci_postupci ), i23 ).
+cvor( odgovarajuci_postupci, i25, i24 ).
+
+
+
+pitaj( Izlaz, Cvor ) :-
+	Cvor = cvor( Pitanje ),
+	cvor( Pitanje, Da, Ne ),
+	( provjeri( Pitanje ) -> pitaj( Izlaz, Da ); pitaj( Izlaz, Ne ) ).
+
+pitaj( Izlaz, Cvor ) :-
+	nonvar( Cvor ),
+	odgovor( Cvor, Izlaz ), !.
+
+pitaj( Pitanje ) :-
+	pitanje( Pitanje, P ),
+        write( P ), nl,
+        read( Odgovor ), nl, 
+         ( ( Odgovor == da ; Odgovor == d ) 
+         -> assert( da( Pitanje )) ; 
+	   assert( ne( Pitanje ) ), fail ).
+
+provjeri( S ) :- ( da( S ) -> true ; ( ne( S ) -> fail ; pitaj( S ) ) ).
+
+pitanje( definicija_osobnog_podatka, 'Osobni podaci su svi podaci koji se odnose na pojedinca čiji je identitet utvrđen ili se može utvrditi. Pojedinac čiji se identitet može utvrditi jest osoba koja se može identificirati izravno ili neizravno, osobito uz pomoć identifikatora kao što su ime, identifikacijski broj, podaci o lokaciji, mrežni identifikator ili uz pomoć jednog ili više čimbenika svojstvenih za fizički, fiziološki, genetski, mentalni, ekonomski, kulturni ili socijalni identitet tog pojedinca. Dakle, jako je širok spektar što su osobni podaci, no jednostavnije rečeno to su: ime i prezime, identifikacijski broj, slika, glas, adresa, broj telefona, IP adresa, povijest bolesti, popis najdraže literature ili pjesama, ako takvi podaci mogu dovesti do izravnog ili neizravnog identificiranja pojedinca. Ističemo da i prije prikupljanja osobnih podataka subjekt koji ih prikuplja ima obvezu pružanja informacija u koju svrhu se podaci prikupljaju, na temelju koje pravne osnove, komu se podaci otkrivaju te o pravu pojedinca da svojim podacima pristupi, da zahtijeva njihov ispravak ili eventualno brisanje.
+Jeste li razumjeli definiciju osobnog podatka?' ).
+
+pitanje( definicija_obrade, 'Obrada obuhvaća radnje poput prikupljanja, bilježenja, čuvanja, uvida, otkrivanja, prenošenja ili uništavanja. Tako primjerice možemo navesti da će Opća uredba o zaštiti podataka obuhvatiti  obradu podataka zaposlenika, potrošača i klijenata, građana od strane državne administracije, pacijenata, učenika, studenata, članova udruga, korisnika društvenih mreža i svaku drugu obradu osobnih podataka koja nije u okviru gore navedenih iznimki. Također, novim ili jačim pravilima bit će obuhvaćene one djelatnosti koje se bave obradom osobnih podataka visokog rizika za koje će biti potrebno provesti procjenu učinka. To su obrade koje se odnose na sustavnu i opsežnu procjenu osobnih aspekata pojedinaca automatiziranim putem, opsežnu obradu posebnih kategorija podataka ili podataka o kaznenim osudama ili kažnjivim djelima  te sustavno praćenje javno dostupnog područja u velikoj mjeri.
+Jeste li razumjeli definiciju obrade osobnih podataka?' ).
+
+
+pitanje( zakonita_obrada, 'Za zakonitu obradu osobnih podataka potrebno je ispuniti barem jedno od narednih pravnih temelja:
+(a) ispitanik je dao privolu za obradu svojih osobnih podataka u jednu ili više posebnih svrha - privola je dobrovoljno, posebno, informirano i nedvosmisleno izražavanje želja ispitanika kojim on izjavom ili jasnom potvrdnom radnjom daje pristanak za obradu osobnih podataka koji se na njega odnose, Uredbom se među ostalim utvrđuje da uvjet dobrovoljnosti nije ispunjen ako ispitanik nema istinski ili slobodan izbor ili ako nije u mogućnosti odbiti ili povući privolu bez posljedica (npr.  privola se daje radi uvrštenja potrošača u neki program vjernosti, dok je u velikoj većini radnopravnih odnosa nemoguće koristiti privolu kao pravnih temelj za obradu podataka radnika);
+(b) obrada je nužna za izvršavanje ugovora u kojem je ispitanik stranka ili kako bi se poduzele radnje na zahtjev ispitanika prije sklapanja ugovora (npr. obrada podataka tražitelja posla radi pozivanja na testiranje, obrada podataka osiguranika radi izvršenja ugovora o osiguranju ili obrada podataka radnika na poslovima održavanja instalacija radi slanja na teren);
+(c) obrada je nužna radi poštovanja pravnih obveza voditelja obrade (npr. slanje podataka o radnicima HZZO-u ili HZMO-u ili slanje podataka stranaka od strane javnog bilježnika Poreznoj upravi sukladno posebnim propisima);
+(d) obrada je nužna kako bi se zaštitili ključni interesi ispitanika ili druge fizičke osobe (npr. otkrivanje od strane nadležnih tijela podataka jednog roditelja drugomu radi uzdržavanja djeteta);
+(e) obrada je nužna za izvršavanje zadaće od javnog interesa ili pri izvršavanju službene ovlasti voditelja obrade (npr. zbog službene ovlasti Državnog zavoda za statistiku pojedini voditelji obrade su dužni tom zavodu dostavljati određene osobne podatke);
+(f) obrada je nužna za potrebe legitimnih interesa voditelja obrade ili treće strane, osim kada su od tih interesa jači interesi ili temeljna prava i slobode ispitanika koji zahtijevaju zaštitu osobnih podataka, osobito ako je ispitanik dijete, s time da se ova točka ne odnosi na obradu koju provode tijela javne vlasti pri izvršavanju svojih zadaća (npr. legitimni interes vlasnika nekretnine da postavi sustav video nazora da bi spriječio realan rizik po njegovoj imovini).
+Spadaju li pronađeni podaci u jednu od gore nabrojenih kategorija?' ).
+
+pitanje( provedeni_modaliteti, 'Jesu li predviđeni modaliteti kojima se olakšava ostvarivanje prava ispitanika iz ove Uredbe, uključujući mehanizme za podnošenje zahtjeva te, ako je primjenjivo, besplatno ostvarivanje, osobito zahtjeva za pristup osobnim podacima, njihovo ispravljanje ili brisanje i ostvarivanje prava na prigovor?' ).
+
+pitanje( dpo_provedeni_modaliteti, 'Jeste li kontaktirali Vašeg DPO radi provjere modaliteta?' ).
+
+pitanje( osjetljivi_podaci, 'Od navedenih dokumenata da li neki sadrži posebno osjetljive podatke kao što su to:
+(a) Rasna pripadnost
+(b) Etnička pripadnost
+(c) Političko stajalište
+(d) Vjersko ili drugo uvjerenje
+(e) Sindikalno članstvo
+(f) Spolni život
+(g) Drugi posebno osjetljivi podaci?' ).
+
+pitanje( propisano_uredbom, 'Je li neki od tih podataka u smislu korištenja propisan Uredbom:
+(a) Obrada nužna radi usklađivanja s propisima o zapošljavanju
+(b) Osoba je već sama javno obajvila te podatke
+(c) Obrada je nužna iz pravnih razloga
+(d) Obrada je nužna u pravosudnim postupcima
+(e) Obrada je nužna iz medicinskih razloga?' ).
+
+pitanje( dpo_propisano_uredbom, 'Jeste li kontaktirali Vašeg DPO radi potvrde o opravdanom korištenju posebno osjetljivih podataka?' ).
+
+pitanje( izricita_suglasnost, 'Je li osoba dala izričitu suglasnost za korištenje svojih privatnih podataka na takav način?' ).
+
+pitanje( kucne_aktivnosti, 'Je li se pronađeni dokumenti koriste u obavljanju isključivo osobnih ili kućnih aktivnosti i nisu povezni s profesionalnom ili komercijalnom djelatnošću?' ).
+
+pitanje( davatelj_usluga, 'Jeste li davatelj usluga za koju je potrebno prikupljati osobne podatke?' ).
+
+pitanje( dpo_davatelj_usluga, 'Jeste li se konzultirali s Vašim DPO u vezi obrade osobnih podataka obzirom na uslugu koju dajete?' ).
+
+pitanje( poslovna_primjena, 'Da li pronađeni dokumenti predstavljaju dokumente za poslovnu primjenu?' ).
+
+pitanje( dpo_poslovna_primjena, 'Jeste li se konzultirali s Vašim DPO radi potvrde koji su dokumenti s osobnim podacima potrebni za poslovnu primjenu?' ).
+
+pitanje( podaci_o_maloljetnicima, 'Da li se u nekom od pronađenih dokumenata obrađuju podaci o djeci/osobama mlađim od 18 godina?' ).
+
+pitanje( obrada_sukladno_uredbi, 'Da li se podaci o maloljetnicima obrađuju sukladno Uredbi?' ).
+
+pitanje( dpo_obrada_sukladno_uredbi, 'Jeste li provjerili s Vašim DPO obrađuju li se podaci o maloljetnicima sukladno uredbom?' ).
+
+pitanje( podaci_zasticeni, 'Da li su podaci o maloljetnicima zaštićeni?' ).
+
+pitanje( dpo_podaci_zasticeni, 'Jeste li provjerili s Vašim DPO jesu li podaci o maloljetnicima na odgovarajući način zaštićeni?' ).
+
+pitanje( genetske_osobine, 'Jesu li pronađeni dokumenti povezani s i/ili sadrže podatke o genetskim osobinama?' ).
+
+pitanje( ima_ovlastenje_genetske_osobine, 'Da li ste ovlašteni sukladno Uredbi prikupljati/obrađivati podatke o genetskim osobinama?' ).
+
+pitanje( dpo_uvjeti_za_rad_genetske_osobine, 'Da li je Vaš DPO upoznat s Vašim aktivnostima i ako jeste da li imate sve uvjete za rad s podacima o genetiskim osobinama?' ).
+
+pitanje( dpo_genetske_osobine, 'Jeste li kontaktirali Vašeg DPO radi potvrde o uvjetima za rad s podacima o genetiskim osobinama?' ).
+
+pitanje( biometrijski_podaci, 'Jesu li pronađeni dokumenti povezani s i/ili sadrže biometrijske podatke?' ).
+
+pitanje( ima_ovlastenje_biometrijski_podaci, 'Da li ste ovlašteni sukladno Uredbi prikupljati/obrađivati biometrijske podatke?' ).
+
+pitanje( dpo_uvjeti_za_rad_biometrijski_podaci, 'Da li je Vaš DPO upoznat s Vašim aktivnostima i ako jeste da li imate sve uvjete za rad s biometrijskim podacima?' ).
+
+pitanje( dpo_biometrijski_podaci, 'Jeste li kontaktirali Vašeg DPO radi potvrde o uvjetima za rad s biometrijskim podacima?' ).
+
+pitanje( podaci_o_videonadzoru, 'Jesu li pronađeni dokumenti povezani s i/ili sadrže podatke o videonadzoru?' ).
+
+pitanje( ima_ovlastenje_podaci_o_videonadzoru, 'Da li ste ovlašteni sukladno Uredbi prikupljati/obrađivati podatke o videonadzoru?' ).
+
+pitanje( dpo_uvjeti_za_rad_podaci_o_videonadzoru, 'Da li je Vaš DPO upoznat s Vašim aktivnostima i ako jeste da li imate sve uvjete za rad s podacima o videonadzoru?' ).
+
+pitanje( dpo_podaci_o_videonadzoru, 'Jeste li kontaktirali Vašeg DPO radi potvrde o uvjetima za rad s podacima o videonadzoru?' ).
+
+pitanje( mjere_zastite, 'Jesu li pronađeni dokumenti/podaci zaštićeni nekim oblikom zaštite podataka poput:
+(1) pseudonimizacije i enkripcije osobnih podataka;
+(2) osiguravanja trajne povjerljivosti, cjelovitosti, dostupnosti i otpornosti sustava i usluga obrade;
+(3) sposobnošću pravodobne ponovne uspostave dostupnosti osobnih podataka i pristupa njima u slučaju fizičkog ili tehničkog incidenta; te
+(4) redovnim testiranje tehničkih i organizacijskih mjera za osiguravanje sigurnosti obrade?' ).
+
+pitanje( dpo_mjere_zastite, 'Jeste li kontaktirali Vašeg DPO vezano uz provjeru zaštitnih mehanizama?' ).
+
+pitanje( preminule_osobe, 'Da li se pronađeni dokumenti/podaci odnose na preminule osobe?' ).
+
+pitanje( propisana_prava, 'Da li osobe čiji se osobni podaci nalaze u pronađenim dokumentima mogu konzumirati neko od propisanih prava:
+• transparentnost: pružanje informacija prilikom prikupljanja osobnih podatak kada voditelj obrade mora među ostalim informacijama obavijestiti ispitanika i o svojem identitetu i kontakt podacima, svrhama obrade i pravnoj osnovi za obradu podataka, primateljima, iznošenju u treće zemlje, razdoblju pohrane, mogućnosti povlačenja privole, itd.;
+• pristup podacima: dobiti od voditelja obrade potvrdu obrađuju li se osobni podaci koji se odnose na njega te ako se takvi osobni podaci obrađuju, pristup osobnim podacima i informacije, među ostalim, o obrađenim osobnim podacima, o svrsi obrade, roku pohrane, iznošenju u treće zemlje itd.; 
+• pravo na ispravak: ispitanik ima pravo zahtijevati ispravak netočnih osobnih podataka koji se na njega odnose, a uzimajući u obzir svrhe obrade, ispitanik ima pravo dopuniti nepotpune osobne podatke, među ostalim i davanjem dodatne izjave;
+• brisanje („pravo na zaborav“): ispitanik ima pravo od voditelja obrade ishoditi brisanje osobnih podataka koji se na njega odnose bez nepotrebnog odgađanja te voditelj obrade ima obvezu obrisati osobne podatke bez nepotrebnog odgađanja ako, među ostalim, osobni podaci više nisu nužni u odnosu na svrhu obrade, ispitanik je povukao privolu za obradu, osobni podaci su nezakonito obrađeni itd., ovo pravo ima ograničenja pa tako na primjer političar ne može zatražiti brisanje informacija o sebi koje su dane u okviru svojega političkog djelovanja;
+• pravo na ograničenje obrade : u pojedinim situacijama (na primjer kada je točnost podataka osporavana ili kada pravo na brisanju ispitanik želi da voditelj obrade zadrži njegove podatke) ispitanik ima pravo zahtijevati da se obrada ograniči uz iznimku pohrane i nekih drugih vrsta obrade;
+• pravo na prenosivost: ispitanik ima pravo zaprimiti svoje osobne podatke, a koje je prethodno pružio voditelju obrade, u strukturiranom obliku te u uobičajeno upotrebljavanom i strojno čitljivom formatu te ima pravo prenijeti te podatke drugom voditelju obrade bez ometanja od strane voditelja obrade kojem su osobni podaci pruženi, ako se obrada provodi automatiziranim putem i temelji na privoli ili ugovoru;
+• pravo na prigovor: ispitanik ima pravo uložiti prigovor na obradu osobnih podataka ako se ista temelji na zadaće od javnog interesa, na izvršavanje službenih ovlasti voditelja obrade ili na legitimne interesa voditelja obrade (uključujući i profiliranje), tada voditelj obrade ne smoje više obrađivati osobne podatke ispitanika osim ako dokaže da njegovi legitimni razlozi za obradu nadilaze interese ispitanika te radi zaštite pravnih zahtjeva, također ako se ispitanik protivi obradi za potrebe izravnog marketinga, osobni podaci više se ne smiju obrađivati;
+• pravo usprotiviti se donošenju automatiziranih pojedinačnih odluka (profiliranje): ispitanik ima pravo da se na njega ne odnosi odluka koja se temelji isključivo na automatiziranoj obradi, uključujući izradu profila, koja proizvodi pravne učinke koji se na njega odnose ili na sličan način značajno na njega utječu, osim ako je takva odluka potrebna za sklapanje ili izvršenje ugovora između ispitanika i voditelja obrade podataka, ako je dopuštena pravom EU-a ili nacionalnim pravom koji se propisuju odgovarajuće mjere zaštite prava i sloboda te legitimnih interesa ispitanika ili temeljena na izričitoj privoli ispitanika?' ).
+
+pitanje( odgovarajuci_postupci, 'Vaši podaci su pronađeni u datotekama koje bi mogle biti %s. Da li se s podacima postupa u skladu sa preporukama u smislu zaštite osobnih podataka i njihovoj sigurnosti?' ).
+
+
+odgovor( i25, 'Vi ste usklađeni su GDPR direktivom!' ).
+odgovor( i24, 'Kontaktirajte Vašeg DPO i uspostavite sustav sigurnosti sukladno preporukama u Uredbi.' ).
+odgovor( i23, 'Kontaktirajte Vašeg DPO i uspostavite primjenu gore navedenih prava ispitanika/građana.' ).
+odgovor( i22, 'Uredba se ne primjenjuje na osobne podatke preminulih osoba, provjerite da li se isti koriste u suglasju sa ostalim Zakonskim propisima.' ).
+odgovor( i21, 'Kontaktirajte DPO radi provjere.' ).
+odgovor( i20, 'Obavezno primijenite mjere propisane Uredbom kako biste zaštitili osobne podatke, potrebno je provesti i PIA analizu.' ).
+odgovor( i19, 'i.   Kontaktirajte Vašeg DPO radi potvrde
+ii.  Provjerite da su ispunjeni svi uvjeti o pristupu ovim podacima
+iii. Osigurajte čuvanje ovog tipa podataka sukladno vremenskom ograničenju propisanog Uredbom' ).
+odgovor( i18, 'Uredba striktno ZABRANJUJE prikupljanje/obradu ovog tipa osobnog podatka, učinite sve da uklonite i sukladno Uredbi zaštitite do sada prikupljene osobne podatke te izvijestite Vašeg DPO da poduzmete sve Uredbom propisane aktivnosti.' ).
+odgovor( i17, 'Kontaktirajte DPO radi potvrde.' ).
+odgovor( i16, 'Uredba striktno ZABRANJUJE prikupljanje/obradu ovog tipa osobnog podatka, učinite sve da uklonite i sukladno Uredbi zaštitite do sada prikupljene osobne podatke te izvijestite Vašeg DPO da poduzmete sve Uredbom propisane aktivnosti.' ).
+odgovor( i15, 'Kontaktirajte Vašeg DPO radi potvrde.' ).
+odgovor( i14, 'Uredba striktno ZABRANJUJE prikupljanje/obradu ovog tipa osobnog podatka, učinite sve da uklonite i sukladno Uredbi zaštitite do sada prikupljene osobne podatke te izvijestite Vašeg DPO da poduzmete sve Uredbom propisane aktivnosti.' ).
+odgovor( i13, 'Obratite se DPO radi potvrde.' ).
+odgovor( i12, 'Obratite se DPO radi implementacije mjera zaštite.' ).
+odgovor( i11, 'Kontaktirajte DPO radi potvrde.' ).
+odgovor( i10, 'Implementirajte mjere propisane Uredbom.' ).
+odgovor( i9_dpo_poslovna_primjena, 'Obratite se Vašem DPO radi potvrde.' ).
+odgovor( i8_dpo_davatelj_usluga, 'Obratite se Vašem DPO radi provjere i usuglašavanja sa regulativom.' ).
+odgovor( i7_kucne_aktivnosti, 'Vi ste GDPR usuglašeni!' ).
+odgovor( i6_dpo_propisano_uredbom, 'Obratite se DPO radi potvrde.' ).
+odgovor( i5_propisano_uredbom, 'Obratite se DPO radi usklađivanja s regulativom.' ).
+odgovor( i4_dpo_provedeni_modaliteti, 'Kontaktirajte DPO radi provjere implementiranih modaliteta.' ).
+odgovor( i3_provedeni_modaliteti, 'Nužno je implementirati modalitete, kontaktirajte Vašeg DPO radi implementacije.' ).
+odgovor( i2_dpo_zakonita_obrada, 'Kontaktirajte Vašeg DPO radi pribavljanja privole.' ).
+odgovor( i1_dpo_pojasni, 'Kontaktirajte Vašeg DPO radi daljnjih pojašnjenja.' ).
