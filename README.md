@@ -1,6 +1,8 @@
 PriAna - Privacy Analysis
 =========================
 
+![PriAna GDPR](https://raw.githubusercontent.com/AILab-FOI/PriAna/master/resources/banner.png)
+
 Intro
 -----
 PriAna is a privacy analysis tool based on various data science and artificial
