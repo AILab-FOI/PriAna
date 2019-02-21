@@ -1,0 +1,9 @@
+ {
+  "name": "extract",
+  "version": "0.0.1",
+  "bin":"extract.js",
+  "pkg": {
+    "scripts": "extract.js",
+    "assets":"bin\\textract\\*"
+  }
+}

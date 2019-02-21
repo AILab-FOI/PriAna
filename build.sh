@@ -57,9 +57,13 @@ fi
 
 echo "Running pyinstaller ..."
 #  
-#$PYINSTALLER --onefile --noconsole --distpath=$DIST --hidden-import='textract.parsers.csv_parser' --hidden-import='textract.parsers.doc_parser' --hidden-import='textract.parsers.docx_parser' --hidden-import='textract.parsers.eml_parser' --hidden-import='textract.parsers.epub_parser' --hidden-import='textract.parsers.gif_parser' --hidden-import='textract.parsers.json_parser' --hidden-import='textract.parsers.html_parser' --hidden-import='textract.parsers.mp3_parser' --hidden-import='textract.parsers.msg_parser' --hidden-import='textract.parsers.odt_parser' --hidden-import='textract.parsers.ogg_parser' --hidden-import='textract.parsers.png_parser' --hidden-import='textract.parsers.jpg_parser' --hidden-import='textract.parsers.pptx_parser' --hidden-import='textract.parsers.ps_parser' --hidden-import='textract.parsers.rtf_parser' --hidden-import='textract.parsers.tiff_parser' --hidden-import='textract.parsers.txt_parser' --hidden-import='textract.parsers.pdf_parser' --hidden-import='textract.parsers.wav_parser' --hidden-import='textract.parsers.xlsx_parser' --hidden-import='textract.parsers.xls_parser' --hidden-import='PIL._tkinter_finder' --hidden-import='nltk.chunk.named_entity' --hidden-import='pymysql' --hidden-import='pg8000'  --hidden-import='win32com' --hidden-import='face_recognition_models' --icon=resources/prana.ico -n 'priana.exe' priana.py # add this if needed , --hidden-import='numpy.core.multiarray'
 
-$PYINSTALLER --onefile --noconsole --distpath=$DIST --icon=resources/prana.ico -n 'priana.exe' priana.exe.spec 
+if [ $SYSTEM = 'win' ]
+then
+	$PYINSTALLER --onefile --noconsole --distpath=$DIST --hidden-import='textract.parsers.csv_parser' --hidden-import='textract.parsers.doc_parser' --hidden-import='textract.parsers.docx_parser' --hidden-import='textract.parsers.eml_parser' --hidden-import='textract.parsers.epub_parser' --hidden-import='textract.parsers.gif_parser' --hidden-import='textract.parsers.json_parser' --hidden-import='textract.parsers.html_parser' --hidden-import='textract.parsers.mp3_parser' --hidden-import='textract.parsers.msg_parser' --hidden-import='textract.parsers.odt_parser' --hidden-import='textract.parsers.ogg_parser' --hidden-import='textract.parsers.png_parser' --hidden-import='textract.parsers.jpg_parser' --hidden-import='textract.parsers.pptx_parser' --hidden-import='textract.parsers.ps_parser' --hidden-import='textract.parsers.rtf_parser' --hidden-import='textract.parsers.tiff_parser' --hidden-import='textract.parsers.txt_parser' --hidden-import='textract.parsers.pdf_parser' --hidden-import='textract.parsers.wav_parser' --hidden-import='textract.parsers.xlsx_parser' --hidden-import='textract.parsers.xls_parser' --hidden-import='PIL._tkinter_finder' --hidden-import='nltk.chunk.named_entity' --hidden-import='pymysql' --hidden-import='pg8000'  --hidden-import='win32com' --icon=resources/prana.ico -n 'priana.exe' priana.py # add this if needed , --hidden-import='numpy.core.multiarray'
+else
+	$PYINSTALLER --onefile --noconsole --distpath=$DIST --icon=resources/prana.ico -n 'priana.exe' priana.exe.spec 
+fi
 echo "Done running pyinstaller!" 
  
  

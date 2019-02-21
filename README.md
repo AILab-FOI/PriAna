@@ -21,7 +21,8 @@ ps, rtf, tiff, tif, txt, wav, xlsx, xls, mdb, rtf, and html.
 
 In addition to filetypes it also scans for MIME types so renamed files are scanned
 as well. Besides textual formats it extracts textual information from images using
-OCR as well as speech from audio files using speech to text.
+OCR as well as speech from audio files using speech to text. Currently only on Linux
+it also detects human faces on images.
 
 It identifies various archive types including images of virtual machines: ovf, ova,
 box, vmdk, vdi, vhd, img, raw, iso, zip, rar, tar, 7z. In the current version such
@@ -89,7 +90,7 @@ the expert system is skipped and the destination folder is deleted in full.
 
 Pre-built binaries
 ------------------
-A pre-built binary is available for Windows (will be online soon):
+A pre-built binary is available for Windows:
 http://ai.foi.hr/priana-win.zip
 
 As well as for Linux (Ubuntu):

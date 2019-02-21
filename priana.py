@@ -206,7 +206,9 @@ card_re = re.compile( r'(\b[4|5|6]\d{3}[\s-]?(\d{4}[\s-]?){2}\d{1,4}\b)|(\b\d{4}
 import multiprocessing
 MAXLEN = multiprocessing.cpu_count()
 from multiprocessing import Process
-import psutil
+
+if SYSTEM.lower()[ :6 ] != 'cygwin':
+    import psutil
 
 
 # TODO: Put this into config
@@ -252,16 +254,20 @@ DONE = False
 NUM_FILES = 0
 NUM_DBS = 0
 
-import face_recognition
+if SYSTEM != 'Windows':
+    import face_recognition
 
 def recognize( image ):
-    img = face_recognition.load_image_file( image )
-    face_locations = face_recognition.face_locations( img, number_of_times_to_upsample=0, model='hog' )
-    if face_locations:
-        return face_locations
+    if SYSTEM != 'Windows':
+        img = face_recognition.load_image_file( image )
+        face_locations = face_recognition.face_locations( img, number_of_times_to_upsample=0, model='hog' )
+        if face_locations:
+            return face_locations
+        else:
+            face_locations = face_recognition.face_locations( img, number_of_times_to_upsample=0, model='cnn' )
+            return face_locations
     else:
-        face_locations = face_recognition.face_locations( img, number_of_times_to_upsample=0, model='cnn' )
-        return face_locations
+        return None
 
 
 def get_cpu_id():
@@ -732,9 +738,12 @@ class GDPRParser( GDPRAgent ):
             fln, ext = os.path.splitext( fl )
             face = False
             try:
-                Image.open( fl )
-                if recognize( fl ):
-                    face = True
+                if SYSTEM != 'Windows':
+                    Image.open( fl )
+                    if recognize( fl ):
+                        face = True
+                else:
+                    raise Exception, 'Windows not supported yet'
             except:
                 self.say( 'File %s is not an image, just continuing ...' % fl )
             if ext != '.mdb':
@@ -1337,11 +1346,15 @@ class FileSearcher( GDPRAgent ):
                                 #print brojac, 18
                                 if counter > 100:
                                     #print counter
-                                    MEMORY = psutil.virtual_memory()
-                                    #print MEMORY
-                                    if MEMORY.percent > 90:
-                                        self.myAgent.say( 'Less then 10 % memory available, going to sleep a bit until other files process.' )
-                                        sleep( 30 )
+                                    if SYSTEM.lower()[ :6 ] != 'cygwin':
+                                        MEMORY = psutil.virtual_memory()
+                                        #print MEMORY
+                                        if MEMORY.percent > 90:
+                                            self.myAgent.say( 'Less then 10 % memory available, going to sleep a bit until other files process.' )
+                                            sleep( 30 )
+                                            counter = 0
+                                    else:
+                                        # Cygwin not supported yet
                                         counter = 0
                         if HASMAX:
                             print 'STOP:', stop
@@ -1724,10 +1737,17 @@ class PriAnaGUI( tk.Tk ):
         except:
             pass
         pid = os.getpid()
-        parent = psutil.Process( pid )
-        for child in parent.children( recursive=True ):  
-            child.kill()
-        parent.kill()
+        if SYSTEM.lower()[ :6 ] != 'cygwin':
+            parent = psutil.Process( pid )
+            for child in parent.children( recursive=True ):  
+                child.kill()
+            parent.kill()
+        else:
+            try:
+                os.kill( -pid, signal.SIGKILL )
+            except:
+                os.kill( pid, signal.SIGKILL )
+            
 
 class ReportViewer( tk.Toplevel ):
 
